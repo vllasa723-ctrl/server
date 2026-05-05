@@ -12,5 +12,6 @@ jobs:
       - run: |
           openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost" 2>/dev/null
           go run server.go &
+          sleep 5
           curl -s -w "HTTP: %{time_total} sec\n" -o /dev/null http://127.0.0.1:8080
           curl -s -k -w "HTTPS: %{time_total} sec\n" -o /dev/null https://127.0.0.1:8443
