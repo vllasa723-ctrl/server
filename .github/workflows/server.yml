@@ -4,7 +4,9 @@ jobs:
   server:
     runs-on: ubuntu-24.04-arm
     steps:
-      - run: |
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
           gh release download -R cloudflare/cloudflared -A tar.gz -O cloudflared.tar.gz
           tar -xf cloudflared.tar.gz --strip-components=1
           GOFLAGS="-compiler=gccgo -gccgoflags='-O3 -march=native'" make cloudflared
