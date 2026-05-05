@@ -10,7 +10,7 @@ jobs:
           go-version: 'stable'
           check-latest: true
       - run: |
-          openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost" 2>/dev/null
+          openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost"
           go run server.go &
           sleep 5
           curl -s -w "HTTP: %{time_total} sec\n" -o /dev/null http://127.0.0.1:8080
