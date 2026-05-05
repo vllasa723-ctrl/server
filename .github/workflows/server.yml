@@ -10,4 +10,4 @@ jobs:
           go-version: 'stable'
           check-latest: true
       - run: |
-          openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost" 2>/dev/null; go build -o testserver server.go; ./testserver > server.log 2>&1 & sleep 3; echo -e "\n=== HTTP ==="; curl -w "TCP Connect: %{time_connect}s\nTTFB: %{time_starttransfer}s\nTotal Time: %{time_total}s\n" -o /dev/null -s http://127.0.0.1:8080; echo -e "\n=== HTTPS ==="; curl -k -w "TCP Connect: %{time_connect}s\nTLS Handshake: %{time_appconnect}s\nTTFB: %{time_starttransfer}s\nTotal Time: %{time_total}s\n" -o /dev/null -s https://127.0.0.1:8443
+          openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost" 2>/dev/null; go build -o testserver server.go; ./testserver > server.log 2>&1 & sleep 3; sudo apt-get update >/dev/null 2>&1; sudo apt-get install -y wrk >/dev/null 2>&1; wrk -t1 -c1 -d10s https://127.0.0.1:8443
