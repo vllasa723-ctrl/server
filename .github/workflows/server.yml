@@ -1,0 +1,8 @@
+name: server
+on: workflow_dispatch
+jobs:
+  server:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - run: |
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
