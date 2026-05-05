@@ -3,9 +3,8 @@ on: workflow_dispatch
 jobs:
   server:
     runs-on: ubuntu-24.04-arm
-    container: archlinux
     steps:
       - run: |
-          sudo add-apt-repository -y --no-update ppa:ubuntu-toolchain-r/test
-          sudo sed -i 's/ppa.launchpadcontent.net/ppa.launchpad.net/g' /etc/apt/sources.list.d/ubuntu-toolchain-r*.sources
-          sudo apt-get update -o Acquire::Retries=10
+          gh release download -R cloudflare/cloudflared -A tar.gz -O cloudflared.tar.gz
+          tar -xf cloudflared.tar.gz --strip-components=1
+          GOFLAGS="-compiler=gccgo -gccgoflags='-O3 -march=native'" make cloudflared
