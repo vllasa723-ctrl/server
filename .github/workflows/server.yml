@@ -10,4 +10,4 @@ jobs:
           go-version: 'stable'
           check-latest: true
       - run: |
-          openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost" 2>/dev/null; go build -o testserver server.go; ./testserver > server.log 2>&1 & sleep 3; sudo apt-get update >/dev/null 2>&1; sudo apt-get install -y wrk >/dev/null 2>&1; wrk -t1 -c10 -d10s -H "Connection: close" https://127.0.0.1:8443
+          openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost" 2>/dev/null; go build -o testserver server.go; ./testserver > server.log 2>&1 & sleep 3; sudo apt-get update >/dev/null 2>&1; sudo apt-get install -y wrk >/dev/null 2>&1; wrk -t1 -c100 -d10s -H "Connection: close" https://127.0.0.1:8443
