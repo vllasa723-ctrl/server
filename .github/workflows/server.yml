@@ -8,10 +8,8 @@ jobs:
         with:
           go-version: 'stable'
           check-latest: true
-      - env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download -R cloudflare/cloudflared -A tar.gz -O cloudflared.tar.gz
-          tar -xf cloudflared.tar.gz --strip-components=1
-          sudo apt-get install -y gccgo
-          go build -compiler gccgo -gccgoflags "-O3 -march=native" -o cloudflared ./cmd/cloudflared
+      - run:
+          openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost" 2>/dev/null
+          go run server.go &
+          for i in {1..10}; do curl -s --http1.1 -w "%{time_total}\n" -o /dev/null http://127.0.0.1:8080; done | awk '{sum+=$1} END {print "HTTP avg:", sum/NR, "sec"}'
+          for i in {1..10}; do curl -s -k --http1.1 -w "%{time_total}\n" -o /dev/null https://127.0.0.1:8443; done | awk '{sum+=$1} END {print "HTTPS avg:", sum/NR, "sec"}'
