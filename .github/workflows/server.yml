@@ -4,6 +4,10 @@ jobs:
   server:
     runs-on: ubuntu-24.04-arm
     steps:
+      - uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
+
       - name: Fetch Metadata
         run: |
           curl -s -H Metadata:true --noproxy "*" \
