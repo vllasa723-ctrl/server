@@ -7,4 +7,4 @@ jobs:
       - run: |
           sudo apt-get install hping3
           curl -s http://ip-api.com/line/
-          sudo hping3 -S -p 179 -c 4 195.208.208.232
+          sudo hping3 -S -p 443 -c 4 87.226.162.216
