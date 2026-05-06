@@ -4,12 +4,5 @@ jobs:
   server:
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
-        with:
-          go-version: 'stable'
-          check-latest: true
       - run: |
-          sudo apt-get install hping3
-          curl -s http://ip-api.com/line/
-          sudo hping3 -S -p 443 1.1.1.1
+          curl -s http://ip-api.com/json/
