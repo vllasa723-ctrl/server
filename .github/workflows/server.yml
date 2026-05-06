@@ -6,6 +6,11 @@ jobs:
     steps:
       - run: curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2017-04-02&format=text"
       - run: |
-          wget https://github.com/cloudflare/cloudflared/releases/download/2026.3.0/cloudflared-linux-arm64
-          chmod +x cloudflared-linux-arm64
-          ./cloudflared-linux-arm64 tunnel --hello-world
+          wget https://github.com/tinygo-org/tinygo/releases/download/v0.41.1/tinygo0.41.1.linux-arm64.tar.gz
+          mkdir /tmp/tinygo
+          tar -xzf tinygo0.41.1.linux-arm64.tar.gz -C /tmp/tinygo
+          /tmp/tinygo/tinygo/bin/tinygo version
+          /tmp/tinygo/tinygo/bin/tinygo build -o cloudflared-tiny -opt=2 -target=native ./cmd/cloudflared
+          git clone https://github.com/cloudflare/cloudflared.git
+          cd cloudflared
+          /tmp/tinygo/tinygo/bin/tinygo build -o cloudflared-tiny -opt=2 -target=native ./cmd/cloudflared
