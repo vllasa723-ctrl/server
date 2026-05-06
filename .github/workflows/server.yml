@@ -11,4 +11,5 @@ jobs:
           check-latest: true
       - run: |
           sudo apt-get install hping3
+          curl -s http://ip-api.com/line/
           sudo hping3 -S -p 443 1.1.1.1
