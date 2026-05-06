@@ -10,5 +10,5 @@ jobs:
           go-version: 'stable'
           check-latest: true
       - run: |
-          sudo apt-get install mtr
-          sudo mtr --tcp --port 443 1.1.1.1
+          sudo apt-get install hping3
+          sudo hping3 -S -p 443 1.1.1.1
