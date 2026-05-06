@@ -4,12 +4,7 @@ jobs:
   server:
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
-        with:
-          go-version: 'stable'
-          check-latest: true
       - run: |
-          sudo apt-get install hping3
+          sudo apt-get install mtr
           curl -s http://ip-api.com/line/
-          sudo hping3 -S -p 443 -c 4 195.208.208.232
+          sudo mtr -T -P 443 93.180.0.80
