@@ -5,6 +5,9 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - run: |
-          sudo apt-get install mtr
+          uname -a
           curl -s http://ip-api.com/line/
-          curl -s https://www.cloudflare.com/cdn-cgi/trace
+          wget https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-aarch64.tgz
+          tar -xvzf ookla-speedtest-1.2.0-linux-aarch64.tgz
+          sudo mv speedtest /usr/local/bin/
+          speedtest --accept-license --accept-gdpr
