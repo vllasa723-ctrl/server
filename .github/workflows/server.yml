@@ -7,4 +7,4 @@ jobs:
       - run: |
           sudo apt-get install mtr
           curl -s http://ip-api.com/line/
-          sudo mtr -T -P 443 93.180.0.80
+          sudo mtr -T -P 443 -r -c 20 93.180.0.80
