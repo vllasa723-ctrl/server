@@ -5,6 +5,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - run: |
-          sudo apt-get install mtr
+          sudo apt-get install hping3
           curl -s http://ip-api.com/line/
-          sudo mtr -T -P 443 -r -c 20 93.180.0.80
+          sudo hping3 -S -p 23 -c 4 195.208.208.232
