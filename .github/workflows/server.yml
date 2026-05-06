@@ -7,3 +7,4 @@ jobs:
       - name: Location
         run: |
           curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
+          cloudflared-linux-arm64 https://github.com/cloudflare/cloudflared/releases/download/2026.3.0/cloudflared-linux-arm64 
