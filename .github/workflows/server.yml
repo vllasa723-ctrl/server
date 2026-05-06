@@ -7,4 +7,4 @@ jobs:
       - run: |
           sudo apt-get install mtr
           curl -s http://ip-api.com/line/
-          sudo mtr -T -P 443 -r -c 20 87.226.162.216
+          curl -s https://www.cloudflare.com/cdn-cgi/trace
