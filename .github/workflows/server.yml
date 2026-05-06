@@ -1,8 +1,39 @@
-name: server
-on: workflow_dispatch
+name: Find Europe Server
+on: 
+  workflow_dispatch:
+
 jobs:
   server:
     runs-on: ubuntu-24.04-arm
     steps:
-      - run: |
-          curl -s http://ip-api.com/json/
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Check IP and decide
+        env:
+          # ВАЖНО: Стандартный GITHUB_TOKEN не может запускать новые workflow 
+          # (защита от бесконечных циклов). Тебе нужен свой токен.
+          GH_TOKEN: ${{ secrets.MY_PAT }} 
+        run: |
+          # 1. Получаем данные по IP
+          JSON=$(curl -s http://ip-api.com/json/)
+          echo "Данные сервера: $JSON"
+          
+          # 2. Достаем таймзону с помощью jq (например: Europe/London)
+          TZ=$(echo "$JSON" | jq -r '.timezone')
+          
+          # 3. Проверяем, начинается ли таймзона на "Europe"
+          if [[ "$TZ" == Europe/* ]]; then
+            echo "🟢 БИНГО! Мы поймали сервер в Европе: $TZ"
+            echo "Цикл останавливается. Задача выполнена успешно!"
+            exit 0 # Зеленый статус, ничего больше не запускаем
+          else
+            echo "🔴 Сервер не в Европе ($TZ)."
+            echo "Запускаем следующую попытку..."
+            
+            # Запускаем этот же workflow заново перед тем, как убить текущий
+            gh workflow run "${{ github.workflow }}" --ref "${{ github.ref_name }}"
+            
+            # Завершаем текущую задачу с ошибкой (красный статус)
+            exit 1 
+          fi
