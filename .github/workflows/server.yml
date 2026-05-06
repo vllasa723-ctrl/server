@@ -4,10 +4,6 @@ jobs:
   server:
     runs-on: ubuntu-24.04-arm
     steps:
-      - run: |
+      - name: Location
+        run: |
           uname -a
-          curl -s http://ip-api.com/line/
-          wget https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-aarch64.tgz
-          tar -xvzf ookla-speedtest-1.2.0-linux-aarch64.tgz
-          sudo mv speedtest /usr/local/bin/
-          speedtest --accept-license --accept-gdpr -s 8000 && speedtest --accept-license --accept-gdpr -s 8000 && speedtest --accept-license --accept-gdpr -s 8000
