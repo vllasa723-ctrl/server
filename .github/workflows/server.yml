@@ -2,7 +2,8 @@ name: server
 on: workflow_dispatch
 jobs:
   server:
-    runs-on: ubuntu-24.04-arm
+    runs-on: macos-latest
     steps:
       - run: |
-          openssl speed -multi 4 -evp aes-128-gcm
+          brew install openssl@3
+          /opt/homebrew/opt/openssl@3/bin/openssl speed -multi 3 -evp aes-128-gcm
