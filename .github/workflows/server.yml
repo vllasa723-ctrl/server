@@ -2,39 +2,7 @@ name: server
 on: workflow_dispatch
 jobs:
   server:
-    runs-on: ubuntu-24.04-arm
+    runs-on: macos-latest
     steps:
-      - uses: actions/setup-go@v6
-        with:
-          go-version: 'stable'
-
-      - name: Fetch Metadata
-        run: |
-          curl -s -H Metadata:true --noproxy "*" \
-            "http://169.254.169.254/metadata/instance/compute/location?api-version=2017-04-02&format=text"
-          
-      - name: Install TinyGo
-        run: |
-          wget https://github.com/tinygo-org/tinygo/releases/download/v0.41.1/tinygo0.41.1.linux-arm64.tar.gz
-          mkdir /tmp/tinygo
-          tar -xzf tinygo0.41.1.linux-arm64.tar.gz -C /tmp/tinygo
-          /tmp/tinygo/tinygo/bin/tinygo version
-
-      - name: Clone cloudflared
-        run: |
-          git clone https://github.com/cloudflare/cloudflared.git
-
-      - name: BUILD THIS MONSTER
-        run: |
-          cd cloudflared
-          
-          # -opt=2: Максимально возможная оптимизация LLVM для скорости (твой -O3)
-          # -no-debug: Вырезаем всю отладочную инфу к чертовой матери (аналог -s -w)
-          # -panic=trap: Жестко крашить паники, чтобы срезать еще немного лишнего кода
-          
-          /tmp/tinygo/tinygo/bin/tinygo build \
-            -o cloudflared-tiny \
-            -opt=2 \
-            -no-debug \
-            -panic=trap \
-            ./cmd/cloudflared
+      - run: |
+          openssl speed -multi 3 -evp aes-128-gcm
