@@ -2,8 +2,10 @@ name: server
 on: workflow_dispatch
 jobs:
   server:
-    runs-on: macos-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - run: |
-          brew install openssl@3
-          /opt/homebrew/opt/openssl@3/bin/openssl speed -multi 3 -evp aes-128-gcm
+          curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
+      - run: |
+          sudo apt update && sudo apt install ethtool -y
+          sudo ethtool eth0
