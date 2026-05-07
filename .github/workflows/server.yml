@@ -5,4 +5,4 @@ jobs:
     runs-on: macos-latest
     steps:
       - run: |
-          openssl speed -multi 3 -evp aes-128-gcm
+          system_profiler SPHardwareDataType
