@@ -8,3 +8,4 @@ jobs:
           curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
       - run: |
           docker run -d --name=webtop --security-opt seccomp=unconfined -e PUID=1000 -e PGID=1000 -e TZ=Europe/Moscow -p 3000:3000 -v ~/webtop-config:/config --restart unless-stopped lscr.io/linuxserver/webtop:ubuntu-xfce
+          wget -qO cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 && chmod +x cloudflared && ./cloudflared tunnel --url http://localhost:3000
