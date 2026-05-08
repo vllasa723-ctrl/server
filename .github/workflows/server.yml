@@ -7,5 +7,5 @@ jobs:
       - run: |
           curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
       - run: |
-          docker rm -f webtop && docker run -d --name=webtop --privileged --shm-size="1gb" -e PUID=1000 -e PGID=1000 -e TZ=Europe/Moscow -e CUSTOM_USER=admin -e PASSWORD=qwerty -p 3000:3000 -v webtop_data:/config --restart unless-stopped lscr.io/linuxserver/webtop:alpine-xfce
+          docker run -d --name=webtop --privileged --shm-size="1gb" -e PUID=1000 -e PGID=1000 -e TZ=Europe/Moscow -e CUSTOM_USER=admin -e PASSWORD=qwerty -p 3000:3000 -v webtop_data:/config --restart unless-stopped lscr.io/linuxserver/webtop:alpine-xfce
           wget -qO cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 && chmod +x cloudflared && ./cloudflared tunnel --url http://localhost:3000
