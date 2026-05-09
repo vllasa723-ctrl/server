@@ -9,10 +9,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: cloudflare/cloudflared
-          ref: '2024.6.0'
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.22.x'
+          go-version: '1.24.0'
       - run: |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
           sudo apt-get update
@@ -20,9 +19,12 @@ jobs:
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 100
           sudo update-alternatives --install /usr/bin/gccgo gccgo /usr/bin/gccgo-15 100
       - run: |
+          go mod edit -go=1.24.0
+          go mod edit -toolchain=none
           export GOTOOLCHAIN=local
           export CGO_ENABLED=1
           export CC=gcc
+          find vendor -type f -name '*.go' -exec sed -i 's/!gccgo/!gccgo_ignore/g' {} + || true
           go build -compiler gccgo -gccgoflags="-O3 -flto=auto -march=native" -o cloudflared ./cmd/cloudflared
       - uses: actions/upload-artifact@v4
         with:
