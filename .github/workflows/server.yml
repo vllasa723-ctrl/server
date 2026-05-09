@@ -1,11 +1,25 @@
-name: server
-on: workflow_dispatch
+name: Build cloudflared
+on:
+  push:
+  workflow_dispatch:
 jobs:
-  server:
+  build:
     runs-on: ubuntu-24.04-arm
     steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: cloudflare/cloudflared
       - run: |
-          curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+          sudo apt-get update
+          sudo apt-get install -y gcc-15 gccgo-15 golang-go
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 100
+          sudo update-alternatives --install /usr/bin/gccgo gccgo /usr/bin/gccgo-15 100
       - run: |
-          docker run -d --name=webtop --network=host --security-opt seccomp=unconfined --shm-size="1gb" -e PUID=1000 -e PGID=1000 -e TZ=Europe/Moscow -e CUSTOM_USER=admin -e PASSWORD=qwerty -v webtop_data:/config --restart unless-stopped lscr.io/linuxserver/webtop:debian-xfce
-          wget -qO cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 && chmod +x cloudflared && ./cloudflared tunnel --url http://localhost:3000
+          export CGO_ENABLED=1
+          export CC=gcc
+          go build -compiler gccgo -gccgoflags="-O3 -flto=auto -march=native" -o cloudflared ./cmd/cloudflared
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cloudflared
+          path: cloudflared
