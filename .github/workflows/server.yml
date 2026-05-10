@@ -17,30 +17,22 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gccgo-15
 
-      - name: Clone target project
-        run: git clone --depth 1 --branch v3.0.0 https://github.com/boyter/scc.git target-project
+      - name: Clone pure Go project (gojq)
+        run: git clone --depth 1 https://github.com/itchyny/gojq.git target-project
 
       - name: Build with official Go compiler
         working-directory: target-project
-        run: go build -o ../bin_gc .
+        run: go build -o ../bin_gc ./cmd/gojq
 
       - name: Build with gccgo-15
         working-directory: target-project
-        run: GCCGO=gccgo-15 go build -compiler gccgo -gccgoflags "-O3 -flto=auto -march=native" -o ../bin_gccgo .
+        run: GCCGO=gccgo-15 go build -compiler gccgo -gccgoflags "-O3 -flto=auto -march=native" -o ../bin_gccgo ./cmd/gojq
 
       - name: Prepare test workload
-        run: git clone --depth 1 https://github.com/redis/redis.git test-workload
+        run: wget https://raw.githubusercontent.com/json-iterator/test-data/master/large-file.json -O test.json
 
       - name: Run benchmark (Official Go)
-        run: time ./bin_gc test-workload
+        run: time ./bin_gc '.[] | select(.type == "PushEvent") | .actor.login' test.json > /dev/null
 
       - name: Run benchmark (GCCGO)
-        run: time ./bin_gccgo test-workload
-
-      - name: Upload binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: compiled-binaries
-          path: |
-            bin_gc
-            bin_gccgo
+        run: time ./bin_gccgo '.
