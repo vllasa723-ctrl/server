@@ -1,29 +1,61 @@
-name: Build cloudflared
+name: Benchmark Go vs GCCGO
 on:
   push:
   workflow_dispatch:
+
 jobs:
-  build:
-    runs-on: ubuntu-24.04-arm
+  build-and-bench:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: cloudflare/cloudflared
-          ref: '2022.12.0'
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.19.x'
-      - run: |
+          go-version: 'stable'
+
+      - name: Install gccgo-15
+        run: |
           sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
           sudo apt-get update
-          sudo apt-get install -y gcc-15 gccgo-15
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 100
-          sudo update-alternatives --install /usr/bin/gccgo gccgo /usr/bin/gccgo-15 100
-      - run: |
-          export CGO_ENABLED=1
-          export CC=gcc
-          go build -compiler gccgo -gccgoflags="-O3 -flto=auto -march=native" -o cloudflared ./cmd/cloudflared
-      - uses: actions/upload-artifact@v4
+          sudo apt-get install -y gccgo-15
+
+      - name: Create CPU-bound Go project
+        run: |
+          cat << 'EOF' > main.go
+          package main
+          import "fmt"
+          func main() {
+            count := 0
+            for i := 2; i < 500000; i++ {
+              isPrime := true
+              for j := 2; j*j <= i; j++ {
+                if i%j == 0 {
+                  isPrime = false
+                  break
+                }
+              }
+              if isPrime {
+                count++
+              }
+            }
+            fmt.Println("Result:", count)
+          }
+          EOF
+
+      - name: Build with official Go compiler
+        run: go build -o bin_gc main.go
+
+      - name: Build with gccgo-15
+        run: GCCGO=gccgo-15 go build -compiler gccgo -gccgoflags "-O3 -flto=auto -march=native" -o bin_gccgo main.go
+
+      - name: Run benchmark (Official Go)
+        run: time ./bin_gc
+
+      - name: Run benchmark (GCCGO)
+        run: time ./bin_gccgo
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
         with:
-          name: cloudflared
-          path: cloudflared
+          name: go-binaries
+          path: |
+            bin_gc
+            bin_gccgo
