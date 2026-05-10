@@ -22,11 +22,11 @@ jobs:
 
       - name: Build with official Go compiler
         working-directory: target-project
-        run: go build -o ../bin_gc main.go
+        run: go build -o ../bin_gc .
 
       - name: Build with gccgo-15
         working-directory: target-project
-        run: GCCGO=gccgo-15 go build -compiler gccgo -gccgoflags "-O3 -flto=auto -march=native" -o ../bin_gccgo main.go
+        run: GCCGO=gccgo-15 go build -compiler gccgo -gccgoflags "-O3 -flto=auto -march=native" -o ../bin_gccgo .
 
       - name: Prepare test workload
         run: git clone --depth 1 https://github.com/redis/redis.git test-workload
