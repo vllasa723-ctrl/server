@@ -17,45 +17,30 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gccgo-15
 
-      - name: Create CPU-bound Go project
-        run: |
-          cat << 'EOF' > main.go
-          package main
-          import "fmt"
-          func main() {
-            count := 0
-            for i := 2; i < 500000; i++ {
-              isPrime := true
-              for j := 2; j*j <= i; j++ {
-                if i%j == 0 {
-                  isPrime = false
-                  break
-                }
-              }
-              if isPrime {
-                count++
-              }
-            }
-            fmt.Println("Result:", count)
-          }
-          EOF
+      - name: Clone target project
+        run: git clone https://github.com/boyter/scc.git target-project
 
       - name: Build with official Go compiler
-        run: go build -o bin_gc main.go
+        working-directory: target-project
+        run: go build -o ../bin_gc main.go
 
       - name: Build with gccgo-15
-        run: GCCGO=gccgo-15 go build -compiler gccgo -gccgoflags "-O3 -flto=auto -march=native" -o bin_gccgo main.go
+        working-directory: target-project
+        run: GCCGO=gccgo-15 go build -compiler gccgo -gccgoflags "-O3 -flto=auto -march=native" -o ../bin_gccgo main.go
+
+      - name: Prepare test workload
+        run: git clone --depth 1 https://github.com/redis/redis.git test-workload
 
       - name: Run benchmark (Official Go)
-        run: time ./bin_gc
+        run: time ./bin_gc test-workload
 
       - name: Run benchmark (GCCGO)
-        run: time ./bin_gccgo
+        run: time ./bin_gccgo test-workload
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          name: go-binaries
+          name: compiled-binaries
           path: |
             bin_gc
             bin_gccgo
