@@ -18,7 +18,7 @@ jobs:
           sudo apt-get install -y gccgo-15
 
       - name: Clone target project
-        run: git clone https://github.com/boyter/scc.git target-project
+        run: git clone --depth 1 --branch v3.0.0 https://github.com/boyter/scc.git target-project
 
       - name: Build with official Go compiler
         working-directory: target-project
