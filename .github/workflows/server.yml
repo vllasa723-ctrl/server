@@ -16,6 +16,7 @@ jobs:
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
           sudo ./llvm.sh 22
+          sudo apt-get install -y llvm-22
       - name: Download and Setup Project
         run: |
           curl -R -O https://www.lua.org/ftp/lua-5.4.7.tar.gz
@@ -33,13 +34,13 @@ jobs:
         run: |
           cd lua-5.4.7
           make clean
-          make generic CC="gcc-15" MYCFLAGS="-O3 -flto -march=native" MYLDFLAGS="-flto"
+          make generic CC="gcc-15" AR="gcc-ar-15 rcu" RANLIB="gcc-ranlib-15" MYCFLAGS="-O3 -flto -march=native -fno-tree-vectorize" MYLDFLAGS="-flto"
           echo "=== GCC 15 ==="
           ./src/lua ../bench.lua
       - name: LLVM 22 Build and Benchmark
         run: |
           cd lua-5.4.7
           make clean
-          make generic CC="clang-22" MYCFLAGS="-O3 -flto -march=native" MYLDFLAGS="-flto"
+          make generic CC="clang-22" AR="llvm-ar-22 rcu" RANLIB="llvm-ranlib-22" MYCFLAGS="-O3 -flto -march=native -fno-vectorize -fno-slp-vectorize" MYLDFLAGS="-flto"
           echo "=== Clang 22 ==="
           ./src/lua ../bench.lua
