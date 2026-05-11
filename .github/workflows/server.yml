@@ -40,18 +40,18 @@ jobs:
       - run: |
           go mod init bench
           go get github.com/valyala/fasthttp
-          GOARM64=v9.0 go build -o server main.go
+          go build -o server main.go
 
       - run: |
           ./server -mode=net &
           PID=$!
           sleep 2
-          wrk -t1 -c1 -d10s http://127.0.0.1:8080
+          wrk -t1 -c100 -d10s http://127.0.0.1:8080
           kill $PID
 
       - run: |
           ./server -mode=fast &
           PID=$!
           sleep 2
-          wrk -t1 -c1 -d10s http://127.0.0.1:8080
+          wrk -t1 -c100 -d10s http://127.0.0.1:8080
           kill $PID
