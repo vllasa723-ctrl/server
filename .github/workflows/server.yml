@@ -1,46 +1,8 @@
-name: Benchmark Compiler Performance
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+name: server
+on: workflow_dispatch
 jobs:
-  benchmark:
+  server:
     runs-on: ubuntu-24.04-arm
     steps:
-      - name: Install Compilers
-        run: |
-          sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-          sudo apt-get update
-          sudo apt-get install -y gcc-15
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 22
-          sudo apt-get install -y llvm-22
-      - name: Download and Setup Project
-        run: |
-          curl -R -O https://www.lua.org/ftp/lua-5.4.7.tar.gz
-          tar zxf lua-5.4.7.tar.gz
-          cat << 'EOF' > bench.lua
-          local function fib(n)
-            if n < 2 then return n end
-            return fib(n-1) + fib(n-2)
-          end
-          local start = os.clock()
-          fib(41)
-          print("Execution time: " .. (os.clock() - start))
-          EOF
-      - name: GCC 15 Build and Benchmark
-        run: |
-          cd lua-5.4.7
-          make clean
-          make generic CC="gcc-15" AR="gcc-ar-15 rcu" RANLIB="gcc-ranlib-15" MYCFLAGS="-O3 -flto -march=native -fno-tree-vectorize" MYLDFLAGS="-flto"
-          echo "=== GCC 15 ==="
-          ./src/lua ../bench.lua
-      - name: LLVM 22 Build and Benchmark
-        run: |
-          cd lua-5.4.7
-          make clean
-          make generic CC="clang-22" AR="llvm-ar-22 rcu" RANLIB="llvm-ranlib-22" MYCFLAGS="-O3 -flto -march=native -fno-vectorize -fno-slp-vectorize" MYLDFLAGS="-flto"
-          echo "=== Clang 22 ==="
-          ./src/lua ../bench.lua
+      - run: |
+          s
