@@ -40,7 +40,7 @@ jobs:
       - run: |
           go mod init bench
           go get github.com/valyala/fasthttp
-          go build -o server main.go
+          GOARM64=v9.0 go build -o server main.go
 
       - run: |
           ./server -mode=net &
