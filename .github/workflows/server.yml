@@ -4,7 +4,38 @@ jobs:
   server:
     runs-on: ubuntu-24.04-arm
     steps:
+      - uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
+          check-latest: true
+
+      - run: |
+          go mod init server
+          go get github.com/valyala/fasthttp
+          cat << 'EOF' > main.go
+          package main
+
+          import (
+              "net"
+              "os"
+              "github.com/valyala/fasthttp"
+          )
+
+          func main() {
+              os.Remove("/tmp/test.sock")
+              ln, err := net.Listen("unix", "/tmp/test.sock")
+              if err != nil {
+                  panic(err)
+              }
+              fasthttp.Serve(ln, func(ctx *fasthttp.RequestCtx) {
+                  ctx.SetBodyString("fasthttp + unix socket works!")
+              })
+          }
+          EOF
+          go run main.go &
+          sleep 2
+
       - run: |
           wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64
           chmod +x cloudflared-linux-arm64
-          ./cloudflared-linux-arm64 tunnel help
+          ./cloudflared-linux-arm64 tunnel --url unix:/tmp/test.sock
