@@ -8,4 +8,4 @@ jobs:
           git clone https://github.com/apersomany/libcfd.git
           cd libcfd
           rustup update
-          CARGO_PROFILE_RELEASE_LTO="true" CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 RUSTFLAGS="-C target-cpu=native" cargo build --release
+          CARGO_PROFILE_RELEASE_LTO="true" CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 RUSTFLAGS="-C target-cpu=native" cargo run --release --example http_hello_world
