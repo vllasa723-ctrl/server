@@ -5,4 +5,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - run: |
+          git clone https://github.com/apersomany/libcfd.git
+          cd libcfd
           rustup update
