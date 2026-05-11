@@ -23,15 +23,42 @@ jobs:
               "github.com/valyala/fasthttp"
           )
 
+          func requestHandler(ctx *fasthttp.RequestCtx) {
+              // Проверяем путь запроса
+              if string(ctx.Path()) == "/metrics" {
+                  // Создаем внутренний запрос к метрикам cloudflared
+                  req := fasthttp.AcquireRequest()
+                  defer fasthttp.ReleaseRequest(req)
+                  resp := fasthttp.AcquireResponse()
+                  defer fasthttp.ReleaseResponse(resp)
+
+                  req.SetRequestURI("http://127.0.0.1:20241/metrics")
+                  req.Header.SetMethod(fasthttp.MethodGet)
+
+                  // Выполняем запрос
+                  if err := fasthttp.Do(req, resp); err != nil {
+                      ctx.Error("Failed to fetch metrics: "+err.Error(), fasthttp.StatusInternalServerError)
+                      return
+                  }
+
+                  // Копируем статус, заголовки и тело ответа
+                  ctx.SetStatusCode(resp.StatusCode())
+                  ctx.SetContentTypeBytes(resp.Header.ContentType())
+                  ctx.SetBody(resp.Body())
+              } else {
+                  // Ответ по умолчанию для всех остальных путей
+                  ctx.SetBodyString("fasthttp + unix socket works on lscf.eu.cc!")
+              }
+          }
+
           func main() {
               os.Remove("/tmp/test.sock")
               ln, err := net.Listen("unix", "/tmp/test.sock")
               if err != nil {
                   panic(err)
               }
-              fasthttp.Serve(ln, func(ctx *fasthttp.RequestCtx) {
-                  ctx.SetBodyString("fasthttp + unix socket works on lscf.eu.cc!")
-              })
+              // Запускаем сервер с нашим обработчиком
+              fasthttp.Serve(ln, requestHandler)
           }
           EOF
           go run main.go &
@@ -42,7 +69,7 @@ jobs:
           wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64
           chmod +x cloudflared-linux-arm64
 
-          # ВСТАВЬ СКОПИРОВАННЫЙ JSON МЕЖДУ 'EOF' (Вместо строчки с JSON ниже)
+          # ВСТАВЬ СКОПИРОВАННЫЙ ИЗ TERMUX JSON МЕЖДУ 'EOF'
           cat << 'EOF' > creds.json
           {"AccountTag":"5f040ebeab3815a045a27c58ba3e2c42","TunnelSecret":"EH4wtasRhB9vbRxyTQMssHQy2hO0u9ItbyCwdx/+MWs=","TunnelID":"94e88beb-c696-4179-a7bd-e56468336518"}
           EOF
@@ -58,4 +85,5 @@ jobs:
             - service: http_status:404
           EOF
 
-          ./cloudflared-linux-arm64 tunnel --config config.yml run
+          # Запускаем туннель, явно указывая порт метрик
+          ./cloudflared-linux-arm64 tunnel --metrics 127.0.0.1:20241 --config config.yml run
