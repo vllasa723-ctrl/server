@@ -10,7 +10,8 @@ jobs:
           check-latest: true
       - run: |
           curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
-      - run: |
+      - name: Start fasthttp unix socket
+        run: |
           go mod init server
           go get github.com/valyala/fasthttp
           cat << 'EOF' > main.go
@@ -29,14 +30,32 @@ jobs:
                   panic(err)
               }
               fasthttp.Serve(ln, func(ctx *fasthttp.RequestCtx) {
-                  ctx.SetBodyString("fasthttp + unix socket works!")
+                  ctx.SetBodyString("fasthttp + unix socket works on lscf.eu.cc!")
               })
           }
           EOF
           go run main.go &
           sleep 2
 
-      - run: |
+      - name: Start Cloudflare Tunnel
+        run: |
           wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64
           chmod +x cloudflared-linux-arm64
-          ./cloudflared-linux-arm64 tunnel --url localhost:8080 --unix-socket /tmp/test.sock
+
+          # ВСТАВЬ СКОПИРОВАННЫЙ JSON МЕЖДУ 'EOF' (Вместо строчки с JSON ниже)
+          cat << 'EOF' > creds.json
+          {"AccountTag":"5f040ebeab3815a045a27c58ba3e2c42","TunnelSecret":"EH4wtasRhB9vbRxyTQMssHQy2hO0u9ItbyCwdx/+MWs=","TunnelID":"94e88beb-c696-4179-a7bd-e56468336518"}
+          EOF
+
+          UUID=$(jq -r .TunnelID creds.json)
+
+          cat << EOF > config.yml
+          tunnel: $UUID
+          credentials-file: $(pwd)/creds.json
+          ingress:
+            - hostname: lscf.eu.cc
+              service: unix:/tmp/test.sock
+            - service: http_status:404
+          EOF
+
+          ./cloudflared-linux-arm64 tunnel --config config.yml run
