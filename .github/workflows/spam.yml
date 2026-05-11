@@ -13,4 +13,4 @@ jobs:
       - name: Start fasthttp unix socket
         run: |
           sudo apt-get install -y wrk
-          wrk -t4 -c2500 -d60s http://lscf.eu.cc/
+          wrk -t4 -c750 -d60s http://lscf.eu.cc/
