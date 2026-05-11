@@ -1,57 +1,8 @@
-name: Benchmark
-on:
-  push:
-  workflow_dispatch:
-
+name: server
+on: workflow_dispatch
 jobs:
-  benchmark:
+  server:
     runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-
-      - run: sudo apt-get update && sudo apt-get install -y wrk
-
       - run: |
-          cat << 'EOF' > main.go
-          package main
-          import (
-              "flag"
-              "net/http"
-              "github.com/valyala/fasthttp"
-          )
-          func main() {
-              mode := flag.String("mode", "net", "")
-              flag.Parse()
-              if *mode == "net" {
-                  http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-                      w.Write([]byte("ok"))
-                  })
-                  http.ListenAndServe(":8080", nil)
-              } else {
-                  fasthttp.ListenAndServe(":8080", func(ctx *fasthttp.RequestCtx) {
-                      ctx.WriteString("ok")
-                  })
-              }
-          }
-          EOF
-
-      - run: |
-          go mod init bench
-          go get github.com/valyala/fasthttp
-          go build -o server main.go
-
-      - run: |
-          ./server -mode=net &
-          PID=$!
-          sleep 2
-          wrk -t1 -c100 -d10s http://127.0.0.1:8080
-          kill $PID
-
-      - run: |
-          ./server -mode=fast &
-          PID=$!
-          sleep 2
-          wrk -t1 -c100 -d10s http://127.0.0.1:8080
-          kill $PID
+          wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64
