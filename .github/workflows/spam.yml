@@ -10,4 +10,4 @@ jobs:
       - name: Start
         run: |
           sudo apt-get install sysbench -y
-          sysbench memory run
+          sysbench memory --threads=$(nproc) run
