@@ -14,15 +14,16 @@ jobs:
       - name: Start
         run: |
           git clone https://github.com/valyala/fasthttp.git
-          cd fasthttp
       - name: net/http
         run: |
+          cd fasthttp
           GOMAXPROCS=1 go test -bench=NetHTTPServerGet -benchmem -benchtime=10s
           GOMAXPROCS=4 go test -bench=NetHTTPServerGet -benchmem -benchtime=10s
           GOMAXPROCS=1 go test -bench='HTTPClient(Do|GetEndToEnd)' -benchmem -benchtime=10s
           GOMAXPROCS=4 go test -bench='HTTPClient(Do|GetEndToEnd)' -benchmem -benchtime=10s
       - name: fasthttp
         run: |
+          cd fasthttp
           GOMAXPROCS=1 go test -bench=kServerGet -benchmem -benchtime=10s
           GOMAXPROCS=4 go test -bench=kServerGet -benchmem -benchtime=10s
           GOMAXPROCS=1 go test -bench='kClient(Do|GetEndToEnd)' -benchmem -benchtime=10s
