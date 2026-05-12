@@ -10,4 +10,4 @@ jobs:
       - name: Start
         run: |
           sudo apt-get install sysbench -y
-          sysbench memory --threads=$(nproc) run
+          sysbench memory --threads=$(nproc) --memory-block-size=1M --memory-total-size=10G run
