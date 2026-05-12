@@ -5,10 +5,13 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: 'stable'
+          check-latest: true
       - run: |
           curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
       - name: Start
         run: |
-          sudo apt-get install -y sysbench mbw
-          mbw -n 3 4096
-          sysbench memory --threads=4 --memory-block-size=1M --memory-total-size=500G run
+          git clone https://github.com/valyala/fasthttp.git
+          cd fasthttp
