@@ -8,10 +8,9 @@ jobs:
           curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
       - name: Start
         run: |
-          dd if=/dev/urandom of=test_90mb.bin bs=1M count=90
-          curl -w "\nВремя: %{time_total} сек\nСкорость загрузки: %{speed_upload} байт/сек\nКод ответа: %{http_code}\n" \
-          -o /dev/null -s -X POST --data-binary @test_90mb.bin http://lscf.eu.cc/
+          dd if=/dev/urandom of=test_3mb.bin bs=1M count=3
+          curl -w "\nВремя: %{time_total} сек\nКод: %{http_code}\n" \
+          -o /dev/null -s -X POST --data-binary @test_3mb.bin http://lscf.eu.cc/
           sudo apt-get update
           sudo apt-get install -y hey
-          hey -n 50 -c 5 -m POST -D test_90mb.bin http://lscf.eu.cc/
-
+          hey -n 1000 -c 20 -m POST -D test_3mb.bin http://lscf.eu.cc/
