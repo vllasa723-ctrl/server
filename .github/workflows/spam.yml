@@ -10,4 +10,4 @@ jobs:
       - name: Start
         run: |
           sudo apt update && sudo apt install wrk -y
-          wrk -t4 -c100 -d10s -s post.lua http://lscf.eu.cc/
+          wrk -t4 -c100 -d10s --timeout 10s -s post.lua http://lscf.eu.cc/
