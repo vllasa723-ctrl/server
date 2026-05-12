@@ -9,5 +9,4 @@ jobs:
           curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
       - name: Start
         run: |
-          sudo apt update && sudo apt install wrk -y
-          wrk -t4 -c100 -d10s --timeout 10s -s post.lua http://lscf.eu.cc/
+          sudo dmidecode -t memory | grep -iE "Speed:|Type:"
