@@ -2,7 +2,7 @@ name: serversiz
 on: workflow_dispatch
 jobs:
   server:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
       - run: |
@@ -10,4 +10,4 @@ jobs:
       - name: Start
         run: |
           sudo apt-get install sysbench -y
-          sysbench memory --threads=$(nproc) --memory-block-size=1M --time=30 --memory-total-size=0 run
+          sysbench memory --threads=$(nproc) --memory-block-size=2M --time=30 --memory-total-size=0 run
