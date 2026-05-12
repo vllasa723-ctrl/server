@@ -9,5 +9,6 @@ jobs:
           curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text"
       - name: Start
         run: |
-          sudo dmidecode --type memory
-          sudo lshw -short -C memory
+          sudo apt-get install -y sysbench mbw
+          mbw -n 3 4096
+          sysbench memory --threads=4 --memory-block-size=1M --memory-total-size=500G run
