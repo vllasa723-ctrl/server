@@ -15,6 +15,7 @@ jobs:
       - run: |
           curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute?api-version=2025-04-07&format=json"
           lscpu
+          curl -sL https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz | tar -xz && ./speedtest --accept-license --accept-gdpr
 
           cat << 'EOF' > benchmark_test.go
           package main
